@@ -18,13 +18,15 @@ def load_class_names():
         return [line.strip() for line in f.readlines()]
 
 # Функция получения информации из Википедии
-def get_wikipedia_info(query):
+def get_wikipedia_info(breed):
     try:
-        page = wikipedia.page(query)
-        summary = wikipedia.summary(query, sentences=2)
-        return page.title, summary, page.url
-    except:
-        return query, "Информация не найдена 😔", "#"
+        search_result = wikipedia.search(breed.replace("_", " "))
+        if not search_result:
+            return "Описание не найдено.", "#"
+        page = wikipedia.page(search_result[0])
+        return wikipedia.summary(search_result[0], sentences=2), page.url
+    except Exception:
+        return "Описание недоступно.", "#"
 
 # Форматирование имени породы
 def format_class_name(class_name):
