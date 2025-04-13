@@ -6,7 +6,10 @@ import wikipediaapi
 from breed_translation import breed_translation
 
 # Установка языка Википедии
-wiki = wikipediaapi.Wikipedia('ru')
+wiki = wikipediaapi.Wikipedia(
+    language='ru',
+    user_agent="streamlit_dogs_breed_classifier/1.0 (https://example.com/contact; sashok.atochin@gmail.com)"
+)
 
 @st.cache_resource
 def load_model():
