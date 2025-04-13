@@ -24,7 +24,7 @@ def preprocess_image(image, target_size=(224, 224)):
     return tf.keras.applications.efficientnet.preprocess_input(img_array)
 
 # Получение информации из Википедии
-def get_wiki_description(breed_name):
+def get_wiki_description_and_link(breed_name):
     try:
         # Используем перевод породы для поиска на Википедии
         breed_ru = breed_translation.get(breed_name, breed_name)  # Получаем русский перевод породы
@@ -34,17 +34,17 @@ def get_wiki_description(breed_name):
         if search_results:
             page_title = search_results[0]
             wiki_page = wikipedia.page(page_title)
-            return wiki_page.summary[:500] + "..."  # Краткое описание породы
+            return wiki_page.summary[:500] + "...", wiki_page.url  # Краткое описание породы и ссылка
         else:
-            return "Информация о породе не найдена на Википедии."
+            return "Информация о породе не найдена на Википедии.", None
     except wikipedia.exceptions.DisambiguationError as e:
-        return f"Есть несколько вариантов для {breed_name}. Например: {', '.join(e.options[:5])}."
+        return f"Есть несколько вариантов для {breed_name}. Например: {', '.join(e.options[:5])}.", None
     except wikipedia.exceptions.RedirectError as e:
-        return f"Произошел редирект при поиске {breed_name}."
+        return f"Произошел редирект при поиске {breed_name}.", None
     except wikipedia.exceptions.HTTPTimeoutError as e:
-        return "Ошибка подключения к Википедии. Попробуйте снова."
+        return "Ошибка подключения к Википедии. Попробуйте снова.", None
     except Exception as e:
-        return str(e)
+        return str(e), None
 
 # Интерфейс
 st.title("🐶 Определение породы собаки по изображению")
@@ -64,10 +64,13 @@ if uploaded_file:
     confidence = prediction[predicted_idx]
     predicted_breed = class_names[predicted_idx]
 
-    # Получаем описание породы с Википедии
-    breed_description = get_wiki_description(predicted_breed)
+    # Получаем описание породы и ссылку на Википедию
+    breed_description, wiki_url = get_wiki_description_and_link(predicted_breed)
 
     # Отображение результатов
     st.markdown(f"### 🐕 Порода: **{breed_translation.get(predicted_breed, predicted_breed)}**")
     st.markdown(f"Уверенность: **{confidence:.2%}**")
     st.markdown(f"**Описание породы**: {breed_description}")
+
+    if wiki_url:
+        st.markdown(f"[Подробнее на Википедии]({wiki_url})")
