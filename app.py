@@ -32,8 +32,10 @@ def get_wiki_description(breed_name):
         return wiki_page.summary[:500] + "..."  # Краткое описание породы
     except wikipedia.exceptions.DisambiguationError as e:
         return f"Есть несколько вариантов для {breed_name}. Например: {', '.join(e.options[:5])}."
-    except wikipedia.exceptions.HTTPError as e:
-        return "Не удалось получить информацию из Википедии."
+    except wikipedia.exceptions.RedirectError as e:
+        return f"Произошел редирект при поиске {breed_name}."
+    except wikipedia.exceptions.HTTPTimeoutError as e:
+        return "Ошибка подключения к Википедии. Попробуйте снова."
     except Exception as e:
         return str(e)
 
