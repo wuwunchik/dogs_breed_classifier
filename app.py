@@ -9,8 +9,10 @@ import wikipediaapi
 wikipedia.set_lang("ru")
 
 # Инициализация Wikipedia API для строгого поиска
-wiki = wikipediaapi.Wikipedia('ru')
-
+wiki = wikipediaapi.Wikipedia(
+    language='ru',
+    user_agent="streamlit_dogs_breed_classifier/1.0 (https://example.com/contact; sashok.atochin@gmail.com)"
+)
 # Функция получения информации из Википедии
 def get_wiki_page(title):
     page = wiki.page(title)
