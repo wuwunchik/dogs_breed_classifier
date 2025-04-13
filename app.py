@@ -23,18 +23,16 @@ def preprocess_image(image, target_size=(224, 224)):
     img_array = tf.expand_dims(img_array, axis=0)
     return tf.keras.applications.efficientnet.preprocess_input(img_array)
 
-# Получение информации из Википедии
 def get_wiki_description_and_link(breed_name):
     try:
-        # Используем перевод породы для поиска на Википедии
-        breed_ru = breed_translation.get(breed_name, breed_name)  # Получаем русский перевод породы
-        wikipedia.set_lang('ru')  # Устанавливаем язык для Википедии на русский
-        search_results = wikipedia.search(breed_ru, results=1)  # Ищем по русскоязычной Википедии
+        breed_ru = breed_translation.get(breed_name, breed_name)
+        wikipedia.set_lang('ru')  
+        search_results = wikipedia.search(breed_ru, results=1)
         
         if search_results:
             page_title = search_results[0]
             wiki_page = wikipedia.page(page_title)
-            return wiki_page.summary[:500] + "...", wiki_page.url  # Краткое описание породы и ссылка
+            return wiki_page.summary[:500] + "...", wiki_page.url  
         else:
             return "Информация о породе не найдена на Википедии.", None
     except wikipedia.exceptions.DisambiguationError as e:
@@ -46,7 +44,6 @@ def get_wiki_description_and_link(breed_name):
     except Exception as e:
         return str(e), None
 
-# Интерфейс
 st.title("🐶 Определение породы собаки по изображению")
 
 uploaded_file = st.file_uploader("Загрузите изображение собаки", type=["jpg", "jpeg", "png"])
