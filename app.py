@@ -28,11 +28,12 @@ def get_wiki_description(breed_name):
     try:
         # Используем перевод породы для поиска на Википедии
         breed_ru = breed_translation.get(breed_name, breed_name)  # Получаем русский перевод породы
-        search_results = wikipedia.search(breed_ru, results=1, lang='ru')  # Ищем по русскоязычной Википедии
+        wikipedia.set_lang('ru')  # Устанавливаем язык для Википедии на русский
+        search_results = wikipedia.search(breed_ru, results=1)  # Ищем по русскоязычной Википедии
         
         if search_results:
             page_title = search_results[0]
-            wiki_page = wikipedia.page(page_title, lang='ru')
+            wiki_page = wikipedia.page(page_title)
             return wiki_page.summary[:500] + "..."  # Краткое описание породы
         else:
             return "Информация о породе не найдена на Википедии."
