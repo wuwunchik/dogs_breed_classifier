@@ -22,9 +22,6 @@ def load_class_names():
 
 # Устанавливаем wikipediaapi (если не установлена)
 # Пример установки и теста поиска статьи по названию
-
-wiki = wikipediaapi.Wikipedia('ru')
-
 # Пример: ищем статью строго по названию
 def get_wiki_page(title):
     page = wiki.page(title)
