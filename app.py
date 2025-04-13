@@ -28,8 +28,14 @@ def get_wiki_description(breed_name):
     try:
         # Используем перевод породы для поиска на Википедии
         breed_ru = breed_translation.get(breed_name, breed_name)  # Получаем русский перевод породы
-        wiki_page = wikipedia.page(breed_ru, auto_suggest=False)
-        return wiki_page.summary[:500] + "..."  # Краткое описание породы
+        search_results = wikipedia.search(breed_ru, results=1, lang='ru')  # Ищем по русскоязычной Википедии
+        
+        if search_results:
+            page_title = search_results[0]
+            wiki_page = wikipedia.page(page_title, lang='ru')
+            return wiki_page.summary[:500] + "..."  # Краткое описание породы
+        else:
+            return "Информация о породе не найдена на Википедии."
     except wikipedia.exceptions.DisambiguationError as e:
         return f"Есть несколько вариантов для {breed_name}. Например: {', '.join(e.options[:5])}."
     except wikipedia.exceptions.RedirectError as e:
