@@ -2,7 +2,8 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import os
+import wikipedia
+from breed_translation import breed_translation
 
 # Загрузка модели
 @st.cache_resource
@@ -22,6 +23,20 @@ def preprocess_image(image, target_size=(224, 224)):
     img_array = tf.expand_dims(img_array, axis=0)
     return tf.keras.applications.efficientnet.preprocess_input(img_array)
 
+# Получение информации из Википедии
+def get_wiki_description(breed_name):
+    try:
+        # Используем перевод породы для поиска на Википедии
+        breed_ru = breed_translation.get(breed_name, breed_name)  # Получаем русский перевод породы
+        wiki_page = wikipedia.page(breed_ru, auto_suggest=False)
+        return wiki_page.summary[:500] + "..."  # Краткое описание породы
+    except wikipedia.exceptions.DisambiguationError as e:
+        return f"Есть несколько вариантов для {breed_name}. Например: {', '.join(e.options[:5])}."
+    except wikipedia.exceptions.HTTPError as e:
+        return "Не удалось получить информацию из Википедии."
+    except Exception as e:
+        return str(e)
+
 # Интерфейс
 st.title("🐶 Определение породы собаки по изображению")
 
@@ -40,5 +55,10 @@ if uploaded_file:
     confidence = prediction[predicted_idx]
     predicted_breed = class_names[predicted_idx]
 
-    st.markdown(f"### 🐕 Порода: **{predicted_breed}**")
+    # Получаем описание породы с Википедии
+    breed_description = get_wiki_description(predicted_breed)
+
+    # Отображение результатов
+    st.markdown(f"### 🐕 Порода: **{breed_translation.get(predicted_breed, predicted_breed)}**")
     st.markdown(f"Уверенность: **{confidence:.2%}**")
+    st.markdown(f"**Описание породы**: {breed_description}")
