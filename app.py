@@ -61,10 +61,8 @@ if uploaded_file:
     confidence = prediction[predicted_idx]
     predicted_breed = class_names[predicted_idx]
 
-    # Получаем описание породы и ссылку на Википедию
     breed_description, wiki_url = get_wiki_description_and_link(predicted_breed)
 
-    # Отображение результатов
     st.markdown(f"### 🐕 Порода: **{breed_translation.get(predicted_breed, predicted_breed)}**")
     st.markdown(f"Уверенность: **{confidence:.2%}**")
     st.markdown(f"**Описание породы**: {breed_description}")
