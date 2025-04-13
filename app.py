@@ -29,7 +29,7 @@ uploaded_file = st.file_uploader("Загрузите изображение со
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Ваше изображение", use_column_width=True)
+    st.image(image, caption="Загруженное изображение", use_container_width=True)
 
     model = load_model()
     class_names = load_class_names()
