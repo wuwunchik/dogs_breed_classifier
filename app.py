@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 import wikipedia
 import re
+import wikipediaapi
 
 # Установка языка Википедии
 wikipedia.set_lang("ru")
@@ -17,16 +18,23 @@ def load_class_names():
     with open("class_names.txt", "r") as f:
         return [line.strip() for line in f.readlines()]
 
-# Функция получения информации из Википедии
-def get_wikipedia_info(breed):
-    try:
-        search_result = wikipedia.search(breed.replace("_", " "))
-        if not search_result:
-            return "Описание не найдено.", "#"
-        page = wikipedia.page(search_result[0])
-        return wikipedia.summary(search_result[0], sentences=2), page.url
-    except Exception:
-        return "Описание недоступно.", "#"
+# Устанавливаем wikipediaapi (если не установлена)
+# Пример установки и теста поиска статьи по названию
+
+wiki = wikipediaapi.Wikipedia('ru')
+
+# Пример: ищем статью строго по названию
+def get_wiki_page(title):
+    page = wiki.page(title)
+    if page.exists():
+        return {
+            "title": page.title,
+            "summary": page.summary[:500] + "...",
+            "url": page.fullurl
+        }
+    return None
+
+
 
 # Форматирование имени породы
 def format_class_name(class_name):
@@ -52,7 +60,7 @@ if uploaded_file is not None:
     predicted_class = class_names[np.argmax(prediction)]
     formatted_name = format_class_name(predicted_class)
 
-    ru_title, summary, wiki_url = get_wikipedia_info(formatted_name)
+    ru_title, summary, wiki_url = get_wiki_page(formatted_name)
 
     st.markdown(f"""
     <div style="text-align: center; padding-top: 20px;">
